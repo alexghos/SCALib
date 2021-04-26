@@ -23,7 +23,13 @@ def test_lda():
     lda_ref = LDA_sklearn(solver="eigen")
     lda_ref.fit(traces, labels)
 
-    assert np.allclose(lda.lda.get_projection(), lda_ref.scalings_[:, :n_components])
+    projection = lda.lda.get_projection()
+    scalings = lda_ref.scalings_[:, :n_components]
+    print("projection:")
+    print(projection)
+    print("scalings:")
+    print(scalings)
+    assert np.allclose(projection, scalings)
 
     # check equivalence for means and cov in subspace
     traces_t = (lda_ref.scalings_[:, :n_components].T @ traces.T).T
