@@ -205,6 +205,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "codespan-reporting"
+version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3538270d33cc669650c4b093848450d380def10c331d38c768e34cac80576e6e"
+dependencies = [
+ "termcolor",
+ "unicode-width",
+]
+
+[[package]]
 name = "console"
 version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -339,6 +349,50 @@ dependencies = [
 ]
 
 [[package]]
+name = "cxx"
+version = "1.0.46"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "786d5484d1e8ec307dbd6565f534de31f1d1131afce0fa1eb77ac3b8b47d3f26"
+dependencies = [
+ "cc",
+ "cxxbridge-flags",
+ "cxxbridge-macro",
+ "link-cplusplus",
+]
+
+[[package]]
+name = "cxx-build"
+version = "1.0.46"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "773012f0cc8a0d4fa96c884664eea2589b78bb53adfd566df80715335fb0c9fa"
+dependencies = [
+ "cc",
+ "codespan-reporting",
+ "lazy_static",
+ "proc-macro2",
+ "quote",
+ "scratch",
+ "syn",
+]
+
+[[package]]
+name = "cxxbridge-flags"
+version = "1.0.46"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1ebc520fbb05a3913547145a408100889e01a45443cd6b97eb2aaf0c992e4736"
+
+[[package]]
+name = "cxxbridge-macro"
+version = "1.0.46"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2fc494eaa42be90f0e55f5b85d664598c0513a97cddd3143b74eeada92bfc154"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "derive_arbitrary"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -392,6 +446,16 @@ dependencies = [
  "log",
  "regex",
  "termcolor",
+]
+
+[[package]]
+name = "geigen"
+version = "0.1.0"
+dependencies = [
+ "cxx",
+ "cxx-build",
+ "ndarray",
+ "ndarray-rand",
 ]
 
 [[package]]
@@ -627,6 +691,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c7d73b3f436185384286bd8098d17ec07c9a7d2388a6599f824d8502b529702a"
 
 [[package]]
+name = "link-cplusplus"
+version = "1.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f1becd27d473556dc610b8afa1636ef90747b574a84553bc11e82371d5ef2d1"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "lock_api"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -689,6 +762,7 @@ version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cc1372704f14bb132a49a6701c2238970a359ee0829fed481b522a63bf25456a"
 dependencies = [
+ "approx",
  "matrixmultiply",
  "num-complex 0.4.0",
  "num-integer",
@@ -1227,6 +1301,7 @@ name = "scalib"
 version = "0.1.0"
 dependencies = [
  "criterion",
+ "geigen",
  "indicatif",
  "itertools 0.10.0",
  "lapacke",
@@ -1261,6 +1336,12 @@ name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+
+[[package]]
+name = "scratch"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7e114536316b51a5aa7a0e59fc49661fd263c5507dd08bd28de052e57626ce69"
 
 [[package]]
 name = "semver"
@@ -1598,8 +1679,3 @@ name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
-
-[[patch.unused]]
-name = "ndarray-linalg"
-version = "0.13.1"
-source = "git+https://github.com/cassiersg/ndarray-linalg?branch=upgrade-ndarray#06af362c1bc779672f11b9aeeaa511ab047655bb"
