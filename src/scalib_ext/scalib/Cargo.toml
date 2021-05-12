@@ -13,7 +13,7 @@ numpy = "0.13.0"
 rayon = "1.5.0"
 num-integer = "0.1.42"
 indicatif = "0.15.0"
-ndarray = { version = "0.15.1", features = ["rayon", "blas", "approx"] }
+ndarray = { version = "0.15.1", features = ["rayon", "approx"] }
 itertools = "0.10.0"
 ndarray-stats = "0.5.0"
 lapacke = "0.3.0"
@@ -22,6 +22,8 @@ nalgebra = "0.26.1"
 approx = "0.4.0"
 geigen = { path = "../geigen" }
 nshare = { git= "https://github.com/cassiersg/nshare", branch="rm_lt", features=["nalgebra", "ndarray", "std"] }
+blis-src = { version = "0.2.1-alpha.0", default-features=false, features=["static", "pthreads"]}
+blis-sys = { git="https://github.com/cassiersg/blis-sys" }
 
 [dev-dependencies]
 criterion = "0.3"
