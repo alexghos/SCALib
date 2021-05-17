@@ -1202,6 +1202,7 @@ dependencies = [
  "itertools 0.10.0",
  "lapacke",
  "lazy_static",
+ "matrixmultiply",
  "nalgebra",
  "ndarray",
  "ndarray-rand",
