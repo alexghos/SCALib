@@ -49,6 +49,8 @@ pub struct Var {
 pub enum FuncType {
     /// Bitwise AND of variables
     AND,
+    /// Bitwise OR of variables
+    OR,
     /// Bitwise ADD of variables
     ADD,
     /// Bitwise XOR of variables
@@ -57,6 +59,8 @@ pub enum FuncType {
     XORCST(Array1<u32>),
     /// Bitwise AND of variables, ANDing additionally a public variable.
     ANDCST(Array1<u32>),
+    /// Bitwise OR of variables, ORing additionally a public variable.
+    ORCST(Array1<u32>),
     /// Bitwise ADD of variables, ADDing additionally a public variable.
     ADDCST(Array1<u32>),
 
@@ -228,6 +232,41 @@ pub fn update_functions(functions: &[Func], edges: &mut [Vec<&mut Array2<f64>>])
                         },
                     );
             }
+            FuncType::OR => {
+                let [output_msg, input1_msg, input2_msg]: &mut [_; 3] =
+                    edge.as_mut_slice().try_into().unwrap();
+                let nc = input1_msg.shape()[1];
+                (
+                    input1_msg.outer_iter_mut(),
+                    input2_msg.outer_iter_mut(),
+                    output_msg.outer_iter_mut(),
+                )
+                    .into_par_iter()
+                    // Use for_each_init to limit the number of a allocation of the message
+                    // scratch-pad.
+                    .for_each_init(
+                        || (Array1::zeros(nc), Array1::zeros(nc), Array1::zeros(nc)),
+                        |(in1_msg_scratch, in2_msg_scratch, out_msg_scratch),
+                         (mut input1_msg, mut input2_msg, mut output_msg)| {
+                            in1_msg_scratch.fill(0.0);
+                            in2_msg_scratch.fill(0.0);
+                            out_msg_scratch.fill(0.0);
+
+                            for i1 in 0..nc {
+                                for i2 in 0..nc {
+                                    let o: usize = i1 | i2;
+                                    in1_msg_scratch[i1] += input2_msg[i2] * output_msg[o];
+                                    in2_msg_scratch[i2] += input1_msg[i1] * output_msg[o];
+                                    out_msg_scratch[o] += input1_msg[i1] * input2_msg[i2];
+                                }
+                            }
+                            input1_msg.assign(in1_msg_scratch);
+                            input2_msg.assign(in2_msg_scratch);
+                            output_msg.assign(out_msg_scratch);
+                        },
+                    );
+            }
+
             FuncType::ADD => {
                 let [output_msg, input1_msg, input2_msg]: &mut [_; 3] =
                     edge.as_mut_slice().try_into().unwrap();
@@ -250,7 +289,7 @@ pub fn update_functions(functions: &[Func], edges: &mut [Vec<&mut Array2<f64>>])
 
                             for i1 in 0..nc {
                                 for i2 in 0..nc {
-                                    let o: usize = (i1 + i2)%nc;
+                                    let o: usize = (i1 + i2) % nc;
                                     in1_msg_scratch[i1] += input2_msg[i2] * output_msg[o];
                                     in2_msg_scratch[i2] += input1_msg[i1] * output_msg[o];
                                     out_msg_scratch[o] += input1_msg[i1] * input2_msg[i2];
@@ -317,6 +356,32 @@ pub fn update_functions(functions: &[Func], edges: &mut [Vec<&mut Array2<f64>>])
                         },
                     );
             }
+            FuncType::ORCST(values) => {
+                let [output_msg, input1_msg]: &mut [_; 2] = edge.as_mut_slice().try_into().unwrap();
+                let nc = input1_msg.shape()[1];
+                (
+                    input1_msg.outer_iter_mut(),
+                    output_msg.outer_iter_mut(),
+                    values.outer_iter(),
+                )
+                    .into_par_iter()
+                    .for_each_init(
+                        || (Array1::zeros(nc), Array1::zeros(nc)),
+                        |(in1_msg_scratch, out_msg_scratch),
+                         (mut input1_msg, mut output_msg, value)| {
+                            in1_msg_scratch.fill(0.0);
+                            out_msg_scratch.fill(0.0);
+                            let value = value.first().unwrap();
+                            for i1 in 0..nc {
+                                let o: usize = ((i1 as u32) | value) as usize;
+                                in1_msg_scratch[i1] += output_msg[o];
+                                out_msg_scratch[o] += input1_msg[i1];
+                            }
+                            input1_msg.assign(in1_msg_scratch);
+                            output_msg.assign(out_msg_scratch);
+                        },
+                    );
+            }
             FuncType::ADDCST(values) => {
                 let [output_msg, input1_msg]: &mut [_; 2] = edge.as_mut_slice().try_into().unwrap();
                 let nc = input1_msg.shape()[1];
@@ -334,7 +399,7 @@ pub fn update_functions(functions: &[Func], edges: &mut [Vec<&mut Array2<f64>>])
                             out_msg_scratch.fill(0.0);
                             let value = value.first().unwrap();
                             for i1 in 0..nc {
-                                let o: usize = (((i1 as u32) + value) as usize)%nc;
+                                let o: usize = (((i1 as u32) + value) as usize) % nc;
                                 in1_msg_scratch[i1] += output_msg[o];
                                 out_msg_scratch[o] += input1_msg[i1];
                             }

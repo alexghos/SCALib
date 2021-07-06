@@ -65,14 +65,17 @@ pub fn to_func(function: &PyDict) -> Func {
     } else if func == 4 {
         let values: PyReadonlyArray1<u32> = function.get_item("values").unwrap().extract().unwrap();
         f = FuncType::ANDCST(values.as_array().to_owned());
-    }else if func == 5{
+    } else if func == 5 {
         f = FuncType::ADD;
-    }
-     else if func == 6 {
+    } else if func == 6 {
         let values: PyReadonlyArray1<u32> = function.get_item("values").unwrap().extract().unwrap();
         f = FuncType::ADDCST(values.as_array().to_owned());
-    }
-    else {
+    } else if func == 7 {
+        f = FuncType::OR;
+    } else if func == 8 {
+        let values: PyReadonlyArray1<u32> = function.get_item("values").unwrap().extract().unwrap();
+        f = FuncType::ORCST(values.as_array().to_owned());
+    } else {
         let table: PyReadonlyArray1<u32> = function.get_item("table").unwrap().extract().unwrap();
         f = FuncType::LOOKUP(table.as_array().to_owned());
     }

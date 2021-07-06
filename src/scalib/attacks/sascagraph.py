@@ -264,7 +264,8 @@ class SASCAGraph:
         AND_CST = 4
         ADD = 5
         ADD_CST = 6
-
+        OR = 7
+        OR_CST = 8
         # edge id
         self.edge_ = 0
 
@@ -347,6 +348,37 @@ class SASCAGraph:
                     # merge public input in the property
                     property["values"] = self.publics_[property["inputs"][i[1]]]
 
+            elif property["property"] == "OR":
+                # If no public inputs
+                if all(x in self.var_ for x in property["inputs"]):
+                    property["func"] = OR
+                    self._share_edge(property, property["output"])
+                    for i in property["inputs"]:
+                        self._share_edge(property, i)
+
+                # if and with public input
+                elif len(property["inputs"]) == 2:
+                    # OR with one public
+                    property["func"] = OR_CST
+
+                    self._share_edge(property, property["output"])
+
+                    # which of both inputs is public
+                    if property["inputs"][0] in self.var_:
+                        i = (0, 1)
+                    elif property["inputs"][1] in self.var_:
+                        i = (1, 0)
+                    else:
+                        assert False
+
+                    # share edge with non public input
+                    self._share_edge(property, property["inputs"][i[0]])
+
+                    # merge public input in the property
+                    property["values"] = self.publics_[property["inputs"][i[1]]]
+
+
+
             elif property["property"] == "ADD":
                 # If no public inputs
                 if all(x in self.var_ for x in property["inputs"]):
@@ -415,7 +447,7 @@ class SASCAGraph:
                     )
 
             else:
-                assert False, "Property must be either LOOKUP, AND, XOR or ADD."
+                assert False, "Property must be either LOOKUP, AND, XOR, ADD or OR."
 
         for v in self.var_:
             v = self.var_[v]
@@ -545,6 +577,11 @@ class SASCAGraphParser:
             inputs = prop.split("&")
             if len(inputs) != 2:
                 raise SASCAGraphError("Wrong number of & operands: must be 2.")
+        elif "|" in prop:
+            prop_kind = "OR"
+            inputs = prop.split("|")
+            if len(inputs) != 2:
+                raise SASCAGraphError("Wrong number of | operands: must be 2.")
         elif "+" in prop:
             prop_kind = "ADD"
             inputs = prop.split("+")
