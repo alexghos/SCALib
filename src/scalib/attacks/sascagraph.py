@@ -377,8 +377,6 @@ class SASCAGraph:
                     # merge public input in the property
                     property["values"] = self.publics_[property["inputs"][i[1]]]
 
-
-
             elif property["property"] == "ADD":
                 # If no public inputs
                 if all(x in self.var_ for x in property["inputs"]):
@@ -407,7 +405,6 @@ class SASCAGraph:
 
                     # merge public input in the property
                     property["values"] = self.publics_[property["inputs"][i[1]]]
-
 
             elif property["property"] == "XOR":
                 # if no inputs are public

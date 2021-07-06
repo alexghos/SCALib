@@ -35,6 +35,7 @@ def test_table():
 
     assert np.allclose(distri_y_ref, distri_y)
 
+
 def test_or_public():
     """
     Test OR with public data
@@ -100,6 +101,7 @@ def test_and_public():
 
     assert np.allclose(distri_y_ref, distri_y)
 
+
 def test_add_public():
     """
     Test ADD with public data
@@ -127,7 +129,7 @@ def test_add_public():
     distri_y = graph.get_distribution("y")
     distri_y_ref = np.zeros(distri_x.shape)
     for x in range(nc):
-        y = (x + public)%nc
+        y = (x + public) % nc
         distri_y_ref[np.arange(n), y] += distri_x[np.arange(n), x]
 
     assert np.allclose(distri_y_ref, distri_y)
@@ -199,7 +201,6 @@ def test_OR():
     assert np.allclose(distri_z_ref, distri_z)
 
 
-
 def test_add():
     """
     Test ADD between distributions
@@ -229,9 +230,10 @@ def test_add():
     distri_z_ref = np.zeros(distri_z.shape)
     for x in range(nc):
         for y in range(nc):
-            distri_z_ref[:, (x + y)%nc] += distri_x[:, x] * distri_y[:, y]
+            distri_z_ref[:, (x + y) % nc] += distri_x[:, x] * distri_y[:, y]
 
     assert np.allclose(distri_z_ref, distri_z)
+
 
 def test_xor():
     """
@@ -317,4 +319,3 @@ def test_and():
             distri_z_ref[:, x & y] += distri_x[:, x] * distri_y[:, y]
 
     assert np.allclose(distri_z_ref, distri_z)
-
